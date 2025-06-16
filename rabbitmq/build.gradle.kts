@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "com.luminia.bridge.common"
+group = "com.luminia.bridge.rabbitmq"
 version = "1.0.0-SNAPSHOT"
 
 repositories {
@@ -10,5 +10,6 @@ repositories {
 }
 
 dependencies {
-    api("io.netty:netty-buffer:4.2.2.Final")
+    api(project(":common"))
+    api("com.rabbitmq:amqp-client:5.25.0")
 }
