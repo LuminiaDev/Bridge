@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
 
+/**
+ * A class from the project <a href="https://github.com/CloudburstMC/Protocol">CloudburstMC/Protocol</a>.
+ */
 @UtilityClass
 public class ByteBufVarInts {
 
