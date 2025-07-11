@@ -40,7 +40,7 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
             this.channel = connection.createChannel();
             this.channel.exchangeDeclare(PACKET_SEND_EXCHANGE, BuiltinExchangeType.FANOUT);
         } catch (IOException | TimeoutException e) {
-            throw new BridgeRabbitMQException("Failed to create channels and declare exchanges", e);
+            throw new BridgeRabbitMQException("Failed to create channel and declare exchange", e);
         }
     }
 

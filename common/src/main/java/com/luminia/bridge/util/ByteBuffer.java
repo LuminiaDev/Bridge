@@ -6,7 +6,12 @@ import lombok.experimental.Delegate;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 public final class ByteBuffer {
 
@@ -29,6 +34,35 @@ public final class ByteBuffer {
     public void writeString(String string) {
         this.writeUnsignedVarInt(ByteBufUtil.utf8Bytes(string));
         buffer.writeCharSequence(string, StandardCharsets.UTF_8);
+    }
+
+    public <T> void readArray(Collection<T> array, Supplier<T> supplier) {
+        this.readArray(array, () -> ByteBufVarInts.readUnsignedInt(buffer), supplier);
+    }
+
+    public <T> void readArray(Collection<T> array, LongSupplier lengthReader, Supplier<T> supplier) {
+        long length = lengthReader.getAsLong();
+        for (int i = 0; i < length; i++) {
+            array.add(supplier.get());
+        }
+    }
+
+    public <T> void writeArray(T[] array, Consumer<T> consumer) {
+        ByteBufVarInts.writeUnsignedInt(buffer, array.length);
+        for (T val : array) {
+            consumer.accept(val);
+        }
+    }
+
+    public <T> void writeArray(Collection<T> array, Consumer<T> consumer) {
+        this.writeArray(array, size -> ByteBufVarInts.writeUnsignedInt(buffer, size), consumer);
+    }
+
+    public <T> void writeArray(Collection<T> array, IntConsumer lengthWriter, Consumer<T> consumer) {
+        lengthWriter.accept(array.size());
+        for (T val : array) {
+            consumer.accept(val);
+        }
     }
 
     public void writeUnsignedVarInt(int value) {
