@@ -1,10 +1,9 @@
 package com.luminia.bridge.network;
 
-import com.luminia.bridge.network.handler.BridgePacketHandler;
+import com.luminia.bridge.network.packet.handler.BridgePacketHandler;
 import com.luminia.bridge.network.packet.BridgePacket;
 import com.luminia.bridge.network.packet.BridgePacketDefinition;
-import com.luminia.bridge.network.packet.serializer.BridgePacketSerializerHelper;
-import io.netty.buffer.ByteBuf;
+import com.luminia.bridge.util.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -30,7 +29,7 @@ public interface BridgeNetwork {
 
     <T extends BridgePacket> void sendPacket(T packet);
 
-    BridgePacket tryDecode(ByteBuf buffer, BridgePacketSerializerHelper helper, String packetId);
+    BridgePacket tryDecode(ByteBuffer buffer, String packetId);
 
-    <T extends BridgePacket> void tryEncode(ByteBuf buffer, BridgePacketSerializerHelper helper, T packet);
+    <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet);
 }

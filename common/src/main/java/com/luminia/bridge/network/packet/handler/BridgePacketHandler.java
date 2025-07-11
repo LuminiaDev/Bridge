@@ -1,4 +1,4 @@
-package com.luminia.bridge.network.handler;
+package com.luminia.bridge.network.packet.handler;
 
 import com.luminia.bridge.network.packet.BridgePacket;
 import com.luminia.bridge.network.packet.BridgePacketDirection;

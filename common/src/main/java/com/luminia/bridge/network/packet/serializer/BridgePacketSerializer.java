@@ -1,11 +1,11 @@
 package com.luminia.bridge.network.packet.serializer;
 
 import com.luminia.bridge.network.packet.BridgePacket;
-import io.netty.buffer.ByteBuf;
+import com.luminia.bridge.util.ByteBuffer;
 
 public interface BridgePacketSerializer<T extends BridgePacket> {
 
-    void serialize(ByteBuf buffer, BridgePacketSerializerHelper helper, T packet);
+    void serialize(ByteBuffer buffer, T packet);
 
-    void deserialize(ByteBuf buffer, BridgePacketSerializerHelper helper, T packet);
+    void deserialize(ByteBuffer buffer, T packet);
 }

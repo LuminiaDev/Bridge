@@ -1,11 +1,10 @@
 package com.luminia.bridge.network;
 
-import com.luminia.bridge.network.handler.BridgePacketHandler;
+import com.luminia.bridge.network.packet.handler.BridgePacketHandler;
 import com.luminia.bridge.network.packet.BridgePacket;
 import com.luminia.bridge.network.packet.BridgePacketDefinition;
 import com.luminia.bridge.network.packet.serializer.BridgePacketSerializer;
-import com.luminia.bridge.network.packet.serializer.BridgePacketSerializerHelper;
-import io.netty.buffer.ByteBuf;
+import com.luminia.bridge.util.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -54,30 +53,30 @@ public abstract class AbstractBridgeNetwork implements BridgeNetwork {
 
     @Override
     @SuppressWarnings("unchecked")
-    public BridgePacket tryDecode(ByteBuf buffer, BridgePacketSerializerHelper helper, String packetId) {
+    public BridgePacket tryDecode(ByteBuffer buffer, String packetId) {
         BridgePacketDefinition<? extends BridgePacket> definition = this.getPacketDefinition(packetId);
 
         BridgePacket packet;
         BridgePacketSerializer<BridgePacket> serializer;
         if (definition != null) {
-            packet = definition.getFactory().get();
+            packet = definition.getFactory().create();
             serializer = (BridgePacketSerializer<BridgePacket>) definition.getSerializer();
         } else {
             throw new RuntimeException();
         }
 
-        serializer.deserialize(buffer, helper, packet);
+        serializer.deserialize(buffer, packet);
         return packet;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends BridgePacket> void tryEncode(ByteBuf buffer, BridgePacketSerializerHelper helper, T packet) {
+    public <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet) {
         BridgePacketDefinition<T> definition = (BridgePacketDefinition<T>) this.getPacketDefinition(packet.getId());
         if (definition == null) {
             throw new RuntimeException();
         }
         BridgePacketSerializer<T> serializer = definition.getSerializer();
-        serializer.serialize(buffer, helper, packet);
+        serializer.serialize(buffer, packet);
     }
 }
