@@ -11,9 +11,7 @@ import java.util.Set;
 
 public interface BridgeNetwork {
 
-    void start();
-
-    void close();
+    String getServiceId();
 
     void setCodec(BridgeCodec codec);
 
@@ -30,4 +28,8 @@ public interface BridgeNetwork {
     BridgePacket tryDecode(ByteBuffer buffer, String packetId);
 
     <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet);
+
+    void start();
+
+    void close();
 }

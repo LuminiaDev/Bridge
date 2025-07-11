@@ -10,11 +10,14 @@ import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
 
     public static final String PACKET_SEND_EXCHANGE = "lumibridge.packet_send_exchange";
+
+    private final String serviceId;
 
     private final Connection connection;
     private final Channel channel;
@@ -22,21 +25,28 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
     private String queueName;
 
     public BridgeRabbitMQNetwork(BridgeRabbitMQConfig config) {
+        this.serviceId = UUID.randomUUID().toString();
+
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost(config.getHost());
         connectionFactory.setPort(config.getPort());
         connectionFactory.setVirtualHost(config.getVirtualHost());
         connectionFactory.setCredentialsProvider(new DefaultCredentialsProvider(
-                config.getCredentials().username(), config.getCredentials().password()
+                config.getCredentials().username(),
+                config.getCredentials().password()
         ));
-
         try {
             this.connection = connectionFactory.newConnection();
             this.channel = connection.createChannel();
             this.channel.exchangeDeclare(PACKET_SEND_EXCHANGE, BuiltinExchangeType.FANOUT);
         } catch (IOException | TimeoutException e) {
-            throw new RuntimeException(e);
+            throw new BridgeRabbitMQException("Failed to create channels and declare exchanges", e);
         }
+    }
+
+    @Override
+    public String getServiceId() {
+        return serviceId;
     }
 
     @Override
@@ -68,10 +78,11 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
     public <T extends BridgePacket> void sendPacket(T packet) {
         ByteBuffer buffer = ByteBuffer.of(Unpooled.buffer());
         buffer.writeString(packet.getId());
+        buffer.writeString(this.serviceId);
         this.tryEncode(buffer, packet);
 
         for (BridgePacketHandler packetHandler : this.getPacketHandlers()) {
-            packetHandler.handle(packet, BridgePacketDirection.FROM_SERVICE);
+            packetHandler.handle(packet, BridgePacketDirection.FROM_SERVICE, this.serviceId);
         }
 
         try {
@@ -85,10 +96,16 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
         try {
             ByteBuffer buffer = ByteBuffer.of(Unpooled.wrappedBuffer(delivery.getBody()));
             String packetId = buffer.readString();
+            String senderId = buffer.readString();
+
+            if (senderId.equals(this.serviceId)) {
+                return;
+            }
+
             BridgePacket packet = this.tryDecode(buffer, packetId);
 
             for (BridgePacketHandler packetHandler : this.getPacketHandlers()) {
-                packetHandler.handle(packet, BridgePacketDirection.TO_SERVICE);
+                packetHandler.handle(packet, BridgePacketDirection.TO_SERVICE, senderId);
             }
         } catch (Exception e) {
             throw new BridgeRabbitMQException("Failed to handle delivery: ", e);

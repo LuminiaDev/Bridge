@@ -4,5 +4,5 @@ import com.luminia.bridge.network.codec.packet.BridgePacket;
 import com.luminia.bridge.network.codec.packet.BridgePacketDirection;
 
 public interface BridgePacketHandler {
-    void handle(BridgePacket packet, BridgePacketDirection direction);
+    void handle(BridgePacket packet, BridgePacketDirection direction, String serviceId);
 }
