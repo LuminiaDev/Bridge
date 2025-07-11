@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongSupplier;
@@ -34,6 +35,15 @@ public final class ByteBuffer {
     public void writeString(String string) {
         this.writeUnsignedVarInt(ByteBufUtil.utf8Bytes(string));
         buffer.writeCharSequence(string, StandardCharsets.UTF_8);
+    }
+
+    public UUID readUuid() {
+        return new UUID(buffer.readLongLE(), buffer.readLongLE());
+    }
+
+    public void writeUuid(UUID uuid) {
+        buffer.writeLongLE(uuid.getMostSignificantBits());
+        buffer.writeLongLE(uuid.getLeastSignificantBits());
     }
 
     public <T> void readArray(Collection<T> array, Supplier<T> supplier) {
