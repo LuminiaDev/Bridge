@@ -4,6 +4,7 @@ import com.luminiadev.bridge.exception.BridgeCodecException;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
 import com.luminiadev.bridge.network.codec.packet.BridgePacketDefinition;
 import com.luminiadev.bridge.network.codec.packet.BridgePacketFactory;
+import com.luminiadev.bridge.network.codec.packet.BridgeUnknownPacket;
 import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializer;
 import com.luminiadev.bridge.util.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +48,7 @@ public final class BridgeCodec {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public BridgePacket tryDecode(ByteBuffer buffer, String packetId) {
         BridgePacketDefinition<? extends BridgePacket> definition = this.getPacketDefinition(packetId);
 
@@ -57,7 +58,11 @@ public final class BridgeCodec {
             packet = definition.getFactory().create();
             serializer = (BridgePacketSerializer<BridgePacket>) definition.getSerializer();
         } else {
-            throw new BridgeCodecException("Definition for packet with id " + packetId + " not found");
+            BridgeUnknownPacket unknownPacket = new BridgeUnknownPacket();
+            unknownPacket.setOriginalId(packetId);
+            unknownPacket.setOriginalPayload(buffer);
+            packet = unknownPacket;
+            serializer = (BridgePacketSerializer) new BridgeUnknownPacket.BridgeUnknownPacketSerializer();
         }
 
         serializer.deserialize(buffer, packet);
@@ -66,11 +71,16 @@ public final class BridgeCodec {
 
     @SuppressWarnings("unchecked")
     public <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet) {
-        BridgePacketDefinition<T> definition = (BridgePacketDefinition<T>) this.getPacketDefinition(packet.getId());
-        if (definition == null) {
-            throw new BridgeCodecException("Definition for packet with id " + packet.getId() + " not found");
+        BridgePacketSerializer<T> serializer;
+        if (packet instanceof BridgeUnknownPacket) {
+            serializer = (BridgePacketSerializer<T>) new BridgeUnknownPacket.BridgeUnknownPacketSerializer();
+        } else {
+            BridgePacketDefinition<T> definition = (BridgePacketDefinition<T>) this.getPacketDefinition(packet.getId());
+            if (definition == null) {
+                throw new BridgeCodecException("Definition for packet with id " + packet.getId() + " not found");
+            }
+            serializer = definition.getSerializer();
         }
-        BridgePacketSerializer<T> serializer = definition.getSerializer();
         serializer.serialize(buffer, packet);
     }
 
