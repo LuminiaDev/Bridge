@@ -2,9 +2,6 @@ plugins {
     id("java")
 }
 
-group = "com.luminia.bridge.common"
-version = "1.0.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
 }
