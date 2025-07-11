@@ -1,6 +1,6 @@
-package com.luminia.bridge.network.packet;
+package com.luminia.bridge.network.codec.packet;
 
-import com.luminia.bridge.network.packet.serializer.BridgePacketSerializer;
+import com.luminia.bridge.network.codec.packet.serializer.BridgePacketSerializer;
 import lombok.Value;
 
 @Value

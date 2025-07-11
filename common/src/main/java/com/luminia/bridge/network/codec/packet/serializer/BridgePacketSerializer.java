@@ -1,6 +1,6 @@
-package com.luminia.bridge.network.packet.serializer;
+package com.luminia.bridge.network.codec.packet.serializer;
 
-import com.luminia.bridge.network.packet.BridgePacket;
+import com.luminia.bridge.network.codec.packet.BridgePacket;
 import com.luminia.bridge.util.ByteBuffer;
 
 public interface BridgePacketSerializer<T extends BridgePacket> {

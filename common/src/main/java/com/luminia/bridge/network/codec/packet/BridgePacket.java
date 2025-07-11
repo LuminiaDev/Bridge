@@ -1,4 +1,4 @@
-package com.luminia.bridge.network.packet;
+package com.luminia.bridge.network.codec.packet;
 
 import org.jetbrains.annotations.NotNull;
 

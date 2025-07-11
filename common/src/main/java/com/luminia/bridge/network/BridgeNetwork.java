@@ -1,8 +1,8 @@
 package com.luminia.bridge.network;
 
-import com.luminia.bridge.network.packet.handler.BridgePacketHandler;
-import com.luminia.bridge.network.packet.BridgePacket;
-import com.luminia.bridge.network.packet.BridgePacketDefinition;
+import com.luminia.bridge.network.codec.BridgeCodec;
+import com.luminia.bridge.network.codec.packet.handler.BridgePacketHandler;
+import com.luminia.bridge.network.codec.packet.BridgePacket;
 import com.luminia.bridge.util.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -15,11 +15,9 @@ public interface BridgeNetwork {
 
     void close();
 
-    @Nullable BridgePacketDefinition<? extends BridgePacket> getPacketDefinition(String id);
+    void setCodec(BridgeCodec codec);
 
-    <T extends BridgePacket> void registerPacket(BridgePacketDefinition<T> definition);
-
-    void unregisterPacket(String packetId);
+    @Nullable BridgeCodec getCodec();
 
     @UnmodifiableView Set<BridgePacketHandler> getPacketHandlers();
 

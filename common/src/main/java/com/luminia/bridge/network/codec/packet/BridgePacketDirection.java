@@ -1,4 +1,4 @@
-package com.luminia.bridge.network.packet;
+package com.luminia.bridge.network.codec.packet;
 
 public enum BridgePacketDirection {
     FROM_SERVICE,
