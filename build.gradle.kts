@@ -11,7 +11,7 @@ java {
 
 allprojects {
     group = "com.luminia"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.3-SNAPSHOT"
 }
 
 subprojects {
@@ -25,6 +25,8 @@ subprojects {
     }
 
     dependencies {
-
+        api("org.jetbrains:annotations:26.0.2")
+        api("org.projectlombok:lombok:1.18.36")
+        annotationProcessor("org.projectlombok:lombok:1.18.36")
     }
 }

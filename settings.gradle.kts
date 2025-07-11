@@ -1,2 +1,3 @@
 rootProject.name = "LumiBridge"
-include("common")
+include("bridge-common")
+include("bridge-rabbitmq")
