@@ -61,7 +61,7 @@ public final class BridgeCodec {
     public <T extends BridgePacket> void registerPacket(BridgePacketDefinition<T> definition) {
         if (!packetsById.containsKey(definition.getId())) {
             packetsById.put(definition.getId(), definition);
-            packetsByClass.put(definition.getFactory().getClass(), definition);
+            packetsByClass.put(definition.getFactory().getPacketClass(), definition);
         } else {
             throw new BridgeCodecException("Packet with id " + definition.getId() + " is already registered");
         }

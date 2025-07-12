@@ -14,4 +14,14 @@ public interface BridgePacketFactory<T extends BridgePacket> {
      * @return A new bridge packet instance
      */
     T create();
+
+    /**
+     * Gets the class of the packet.
+     *
+     * @return Class<T>
+     */
+    @SuppressWarnings("unchecked")
+    default Class<T> getPacketClass() {
+        return (Class<T>) this.create().getClass();
+    }
 }
