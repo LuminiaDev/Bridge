@@ -37,3 +37,50 @@ network.addPacketHandler((packet, direction, serviceId) -> {
     }
 });
 ```
+
+## Maven
+Adding repo:
+```xml
+<repositories>
+    <repository>
+        <id>luminiadev-repository-snapshots</id>
+        <url>https://repo.luminiadev.com/snapshots</url>
+    </repository>
+</repositories>
+```
+
+For adding a library only:
+```xml
+<dependency>
+    <groupId>com.luminiadev.bridge</groupId>
+    <artifactId>bridge-common</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+</dependency>
+```
+
+For adding a library RabbitMQ implementation:
+```xml
+<dependency>
+    <groupId>com.luminiadev.bridge</groupId>
+    <artifactId>bridge-rabbitmq</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+</dependency>
+```
+## Gradle
+Adding repo:
+```groovy
+maven {
+    name = "luminiadevRepositorySnapshots"
+    url = uri("https://repo.luminiadev.com/snapshots")
+}
+```
+
+For adding a library only:
+```groovy
+implementation "com.luminiadev.bridge:bridge-common:1.0.6-SNAPSHOT"
+```
+
+For adding a library RabbitMQ implementation:
+```groovy
+implementation "com.luminiadev.bridge:bridge-rabbitmq:1.0.6-SNAPSHOT"
+```
