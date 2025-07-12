@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Unknown packet class.
+ * If an unregistered packet arrives to the codec, it will be handled as "BridgeUnknownPacket".
+ */
 @Data
 @EqualsAndHashCode(doNotUseGetters = true)
 public final class BridgeUnknownPacket implements BridgePacket {

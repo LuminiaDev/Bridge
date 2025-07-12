@@ -6,6 +6,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class BridgeRabbitMQConfig {
+
     private final String host;
     @Builder.Default
     private final int port = -1; // -1 for use default value

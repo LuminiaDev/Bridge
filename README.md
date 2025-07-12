@@ -16,22 +16,24 @@ import com.luminiadev.bridge.network.codec.packet.BridgePacketDirection;
 BridgeRabbitMQNetwork network = new BridgeRabbitMQNetwork(BridgeRabbitMQConfig.builder()
         .host("localhost")
         .credentials(new BridgeRabbitMQCredentials("guest", "guest"))
+        .serviceId("my-service-id") // You can remove this parameter and the id will be generated automatically
         .build());
 
-// Creating a codec with an example packet
-BridgeCodec codec = BridgeCodec.builder()
-        .registerPacket("example_packet", ExamplePacket::new, new ExamplePacketSerializer())
-        .build();
+        // Creating a codec with an example packet
+// If any packet is not found in the codec, it will be handled as BridgeUnknownPacket.
+        BridgeCodec codec = BridgeCodec.builder()
+                .registerPacket("example_packet", ExamplePacket::new, new ExamplePacketSerializer())
+                .build();
 
 network.setCodec(codec); // Set codec to network
 network.start(); // Start network
 
 // Adding packet handler
 network.addPacketHandler((packet, direction, serviceId) -> {
-    if (direction == BridgePacketDirection.TO_SERVICE) {
+        if (direction == BridgePacketDirection.TO_SERVICE) {
         System.out.println("Received packet " + packet + " from service " + serviceId);
     } else {
-        System.out.println("Sent packet: " + packet);
+            System.out.println("Sent packet: " + packet);
     }
-});
+            });
 ```
