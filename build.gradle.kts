@@ -11,7 +11,7 @@ java {
 }
 
 allprojects {
-    group = "com.luminiadev"
+    group = "com.luminiadev.bridge"
     version = "1.0.6-SNAPSHOT"
 }
 
