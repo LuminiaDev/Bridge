@@ -9,11 +9,15 @@ import com.rabbitmq.client.*;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * The bridge network interface implementation for RabbitMQ
+ */
 public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
 
     public static final String PACKET_SEND_EXCHANGE = "lumibridge.packet_send_exchange";
@@ -46,7 +50,7 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
     }
 
     @Override
-    public String getServiceId() {
+    public @NotNull String getServiceId() {
         return serviceId;
     }
 

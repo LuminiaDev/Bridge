@@ -13,33 +13,66 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Bridge packet codec for registering and encoding packets.
+ */
 public final class BridgeCodec {
 
     private final Map<String, BridgePacketDefinition<? extends BridgePacket>> packetsById = new HashMap<>();
     private final Map<Class<?>, BridgePacketDefinition<? extends BridgePacket>> packetsByClass = new HashMap<>();
 
+    /**
+     * Creates an empty codec builder.
+     *
+     * @return Builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Gets the bridge packet definition by the id.
+     *
+     * @param id Packet id
+     * @return BridgePacketDefinition or null
+     */
     public @Nullable BridgePacketDefinition<? extends BridgePacket> getPacketDefinition(String id) {
         return packetsById.get(id);
     }
 
+    /**
+     * Gets the bridge packet definition by the id.
+     * @param classOf Packet class
+     * @param <T> Packet type
+     * @return BridgePacketDefinition or null
+     */
     @SuppressWarnings("unchecked")
     public @Nullable <T extends BridgePacket> BridgePacketDefinition<T> getPacketDefinition(Class<T> classOf) {
         return (BridgePacketDefinition<T>) packetsByClass.get(classOf);
     }
 
+    /**
+     * Register the packet definition.
+     *
+     * @param definition BridgePacketDefinition
+     * @param <T> Packet type
+     * @throws BridgeCodecException If the packet is already registered
+     */
     public <T extends BridgePacket> void registerPacket(BridgePacketDefinition<T> definition) {
         if (!packetsById.containsKey(definition.getId())) {
             packetsById.put(definition.getId(), definition);
-            packetsByClass.put(definition.getClass(), definition);
+            packetsByClass.put(definition.getFactory().getClass(), definition);
         } else {
             throw new BridgeCodecException("Packet with id " + definition.getId() + " is already registered");
         }
     }
 
+    /**
+     * Deregister packet definition by packet id.
+     *
+     * @param packetId Packet id
+     * @throws BridgeCodecException If the packet is not registered
+     */
     public void unregisterPacket(String packetId) {
         BridgePacketDefinition<? extends BridgePacket> definition = packetsById.remove(packetId);
         if (definition != null) {
@@ -49,6 +82,14 @@ public final class BridgeCodec {
         }
     }
 
+    /**
+     * Decodes the byte buffer in BridgePacket.
+     *
+     * @param buffer   Netty ByteBuf
+     * @param packetId Packet id
+     * @return The decoded BridgePacket
+     * @throws BridgeCodecException If the codec is not set
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public BridgePacket tryDecode(ByteBuf buffer, String packetId) {
         BridgePacketDefinition<? extends BridgePacket> definition = this.getPacketDefinition(packetId);
@@ -71,6 +112,13 @@ public final class BridgeCodec {
         return packet;
     }
 
+    /**
+     * Encodes the BridgePacket to byte buffer.
+     *
+     * @param buffer Netty ByteBuf
+     * @param packet Packet object
+     * @throws BridgeCodecException If the codec is not set
+     */
     @SuppressWarnings("unchecked")
     public <T extends BridgePacket> void tryEncode(ByteBuf buffer, T packet) {
         BridgePacketSerializerHelper helper = new BridgePacketSerializerHelper(buffer);
@@ -89,6 +137,11 @@ public final class BridgeCodec {
         serializer.serialize(buffer, helper, packet);
     }
 
+    /**
+     * Creates Builder from codec with all codec parameters.
+     *
+     * @return Builder
+     */
     public Builder toBuilder() {
         Builder builder = new Builder();
         builder.definitions.putAll(packetsById);

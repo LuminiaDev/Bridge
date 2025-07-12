@@ -16,6 +16,9 @@ import java.util.function.Function;
 import java.util.function.ObjIntConsumer;
 import java.util.function.ToLongFunction;
 
+/**
+ * Packet serializer helper. Contains methods for reading and writing strings, var ints arrays, etc.
+ */
 @AllArgsConstructor
 public final class BridgePacketSerializerHelper {
 

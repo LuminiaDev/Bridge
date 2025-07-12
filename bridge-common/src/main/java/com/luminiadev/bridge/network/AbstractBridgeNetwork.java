@@ -12,6 +12,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Bridge network interface abstract class with basic methods implementation.
+ */
 public abstract class AbstractBridgeNetwork implements BridgeNetwork {
 
     private BridgeCodec codec;
