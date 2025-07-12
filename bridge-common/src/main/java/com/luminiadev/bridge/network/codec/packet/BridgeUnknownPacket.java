@@ -1,17 +1,18 @@
 package com.luminiadev.bridge.network.codec.packet;
 
 import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializer;
-import com.luminiadev.bridge.util.ByteBuffer;
-import org.jetbrains.annotations.NotNull;
+import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializerHelper;
+import io.netty.buffer.ByteBuf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.jetbrains.annotations.NotNull;
 
 @Data
 @EqualsAndHashCode(doNotUseGetters = true)
 public final class BridgeUnknownPacket implements BridgePacket {
 
     private String originalId;
-    private ByteBuffer originalPayload;
+    private ByteBuf originalPayload;
 
     @Override
     public @NotNull String getId() {
@@ -21,19 +22,15 @@ public final class BridgeUnknownPacket implements BridgePacket {
     public static final class BridgeUnknownPacketSerializer implements BridgePacketSerializer<BridgeUnknownPacket> {
 
         @Override
-        public void serialize(ByteBuffer buffer, BridgeUnknownPacket packet) {
-            buffer.writeString(packet.getOriginalId());
-            buffer.writeBytes(
-                    packet.getOriginalPayload().byteBuf(),
-                    packet.getOriginalPayload().readerIndex(),
-                    packet.getOriginalPayload().readableBytes()
-            );
+        public void serialize(ByteBuf buffer, BridgePacketSerializerHelper helper, BridgeUnknownPacket packet) {
+            helper.writeString(packet.originalId);
+            buffer.writeBytes(packet.originalPayload, packet.originalPayload.readerIndex(), packet.originalPayload.readableBytes());
         }
 
         @Override
-        public void deserialize(ByteBuffer buffer, BridgeUnknownPacket packet) {
-            packet.setOriginalId(buffer.readString());
-            packet.setOriginalPayload(ByteBuffer.of(buffer.readRetainedSlice(buffer.readableBytes())));
+        public void deserialize(ByteBuf buffer, BridgePacketSerializerHelper helper, BridgeUnknownPacket packet) {
+            packet.setOriginalId(helper.readString());
+            packet.setOriginalPayload(buffer.readRetainedSlice(buffer.readableBytes()));
         }
     }
 }

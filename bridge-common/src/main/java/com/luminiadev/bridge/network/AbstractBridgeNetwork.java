@@ -2,13 +2,15 @@ package com.luminiadev.bridge.network;
 
 import com.luminiadev.bridge.exception.BridgeCodecException;
 import com.luminiadev.bridge.network.codec.BridgeCodec;
-import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
-import com.luminiadev.bridge.util.ByteBuffer;
+import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
+import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractBridgeNetwork implements BridgeNetwork {
 
@@ -41,7 +43,7 @@ public abstract class AbstractBridgeNetwork implements BridgeNetwork {
     }
 
     @Override
-    public BridgePacket tryDecode(ByteBuffer buffer, String packetId) {
+    public BridgePacket tryDecode(ByteBuf buffer, String packetId) {
         if (codec == null) {
             throw new BridgeCodecException("Codec is not set");
         }
@@ -49,7 +51,7 @@ public abstract class AbstractBridgeNetwork implements BridgeNetwork {
     }
 
     @Override
-    public <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet) {
+    public <T extends BridgePacket> void tryEncode(ByteBuf buffer, T packet) {
         if (codec == null) {
             throw new BridgeCodecException("Codec is not set");
         }
