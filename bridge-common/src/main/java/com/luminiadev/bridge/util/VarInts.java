@@ -9,7 +9,7 @@ import java.math.BigInteger;
  * A class from the project <a href="https://github.com/CloudburstMC/Protocol">CloudburstMC/Protocol</a>.
  */
 @UtilityClass
-public class ByteBufVarInts {
+public class VarInts {
 
     private static final BigInteger BIG_INTEGER_7F = BigInteger.valueOf(0x7f);
     private static final BigInteger BIG_INTEGER_80 = BigInteger.valueOf(0x80);

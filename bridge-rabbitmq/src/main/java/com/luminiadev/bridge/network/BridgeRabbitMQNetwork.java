@@ -4,9 +4,10 @@ import com.luminiadev.bridge.exception.BridgeRabbitMQException;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
 import com.luminiadev.bridge.network.codec.packet.BridgePacketDirection;
 import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
-import com.luminiadev.bridge.util.ByteBuffer;
+import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializerHelper;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
@@ -50,18 +51,18 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
     }
 
     @Override
-    public void start() {
+    public final void start() {
         try {
             this.queueName = channel.queueDeclare().getQueue();
             this.channel.queueBind(queueName, PACKET_SEND_EXCHANGE, "");
-            this.channel.basicConsume(queueName, true, this::handleDelivery, consumerTag -> {});
+            this.channel.basicConsume(queueName, true, this::handleDelivery, this::handleCancel);
         } catch (IOException e) {
             throw new BridgeRabbitMQException("Failed to start RabbitMQ network", e);
         }
     }
 
     @Override
-    public void close() {
+    public final void close() {
         try {
             if (queueName != null) {
                 this.channel.queueUnbind(queueName, PACKET_SEND_EXCHANGE, "");
@@ -76,9 +77,10 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
 
     @Override
     public <T extends BridgePacket> void sendPacket(T packet) {
-        ByteBuffer buffer = ByteBuffer.of(Unpooled.buffer());
-        buffer.writeString(packet.getId());
-        buffer.writeString(this.serviceId);
+        ByteBuf buffer = Unpooled.buffer();
+        BridgePacketSerializerHelper helper = new BridgePacketSerializerHelper(buffer);
+        helper.writeString(packet.getId());
+        helper.writeString(this.serviceId);
         this.tryEncode(buffer, packet);
 
         for (BridgePacketHandler packetHandler : this.getPacketHandlers()) {
@@ -94,9 +96,10 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
 
     protected void handleDelivery(String consumerTag, Delivery delivery) {
         try {
-            ByteBuffer buffer = ByteBuffer.of(Unpooled.wrappedBuffer(delivery.getBody()));
-            String packetId = buffer.readString();
-            String senderId = buffer.readString();
+            ByteBuf buffer = Unpooled.wrappedBuffer(delivery.getBody());
+            BridgePacketSerializerHelper helper = new BridgePacketSerializerHelper(buffer);
+            String packetId = helper.readString();
+            String senderId = helper.readString();
 
             if (senderId.equals(this.serviceId)) {
                 return;
@@ -110,5 +113,9 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
         } catch (Exception e) {
             throw new BridgeRabbitMQException("Failed to handle delivery: ", e);
         }
+    }
+
+    protected void handleCancel(String consumerTag) {
+
     }
 }

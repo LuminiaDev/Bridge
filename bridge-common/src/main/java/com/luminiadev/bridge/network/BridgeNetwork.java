@@ -1,9 +1,9 @@
 package com.luminiadev.bridge.network;
 
 import com.luminiadev.bridge.network.codec.BridgeCodec;
-import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
-import com.luminiadev.bridge.util.ByteBuffer;
+import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
+import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -25,9 +25,9 @@ public interface BridgeNetwork {
 
     <T extends BridgePacket> void sendPacket(T packet);
 
-    BridgePacket tryDecode(ByteBuffer buffer, String packetId);
+    BridgePacket tryDecode(ByteBuf buffer, String packetId);
 
-    <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet);
+    <T extends BridgePacket> void tryEncode(ByteBuf buffer, T packet);
 
     void start();
 

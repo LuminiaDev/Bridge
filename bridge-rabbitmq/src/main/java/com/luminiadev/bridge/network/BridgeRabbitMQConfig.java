@@ -2,11 +2,9 @@ package com.luminiadev.bridge.network;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 @Builder
 @Getter
-@ToString
 public class BridgeRabbitMQConfig {
     private final String host;
     @Builder.Default

@@ -6,7 +6,8 @@ import com.luminiadev.bridge.network.codec.packet.BridgePacketDefinition;
 import com.luminiadev.bridge.network.codec.packet.BridgePacketFactory;
 import com.luminiadev.bridge.network.codec.packet.BridgeUnknownPacket;
 import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializer;
-import com.luminiadev.bridge.util.ByteBuffer;
+import com.luminiadev.bridge.network.codec.packet.serializer.BridgePacketSerializerHelper;
+import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -49,8 +50,9 @@ public final class BridgeCodec {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public BridgePacket tryDecode(ByteBuffer buffer, String packetId) {
+    public BridgePacket tryDecode(ByteBuf buffer, String packetId) {
         BridgePacketDefinition<? extends BridgePacket> definition = this.getPacketDefinition(packetId);
+        BridgePacketSerializerHelper helper = new BridgePacketSerializerHelper(buffer);
 
         BridgePacket packet;
         BridgePacketSerializer<BridgePacket> serializer;
@@ -65,12 +67,14 @@ public final class BridgeCodec {
             serializer = (BridgePacketSerializer) new BridgeUnknownPacket.BridgeUnknownPacketSerializer();
         }
 
-        serializer.deserialize(buffer, packet);
+        serializer.deserialize(buffer, helper, packet);
         return packet;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends BridgePacket> void tryEncode(ByteBuffer buffer, T packet) {
+    public <T extends BridgePacket> void tryEncode(ByteBuf buffer, T packet) {
+        BridgePacketSerializerHelper helper = new BridgePacketSerializerHelper(buffer);
+
         BridgePacketSerializer<T> serializer;
         if (packet instanceof BridgeUnknownPacket) {
             serializer = (BridgePacketSerializer<T>) new BridgeUnknownPacket.BridgeUnknownPacketSerializer();
@@ -81,7 +85,8 @@ public final class BridgeCodec {
             }
             serializer = definition.getSerializer();
         }
-        serializer.serialize(buffer, packet);
+
+        serializer.serialize(buffer, helper, packet);
     }
 
     public Builder toBuilder() {
