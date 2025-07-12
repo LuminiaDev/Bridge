@@ -26,7 +26,7 @@ public class BridgeRabbitMQNetwork extends AbstractBridgeNetwork {
     private String queueName;
 
     public BridgeRabbitMQNetwork(BridgeRabbitMQConfig config) {
-        this.serviceId = UUID.randomUUID().toString();
+        this.serviceId = config.getServiceId() != null ? config.getServiceId() : UUID.randomUUID().toString();
 
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost(config.getHost());
