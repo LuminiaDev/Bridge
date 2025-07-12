@@ -27,6 +27,10 @@ public final class ByteBuffer {
         return new ByteBuffer(buffer);
     }
 
+    public ByteBuf byteBuf() {
+        return buffer;
+    }
+
     public String readString() {
         int length = this.readUnsignedVarInt();
         return (String) buffer.readCharSequence(length, StandardCharsets.UTF_8);
