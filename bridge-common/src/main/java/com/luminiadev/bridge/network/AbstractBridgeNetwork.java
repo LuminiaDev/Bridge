@@ -4,6 +4,8 @@ import com.luminiadev.bridge.exception.BridgeCodecException;
 import com.luminiadev.bridge.network.codec.BridgeCodec;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
 import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
+import com.luminiadev.bridge.network.codec.packet.handler.BridgeSinglePacketHandler;
+import com.luminiadev.bridge.network.codec.packet.handler.TypedBridgePacketHandler;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -36,8 +38,14 @@ public abstract class AbstractBridgeNetwork implements BridgeNetwork {
     }
 
     @Override
-    public void addPacketHandler(BridgePacketHandler handler) {
+    public BridgePacketHandler addPacketHandler(BridgePacketHandler handler) {
         handlers.add(handler);
+        return handler;
+    }
+
+    @Override
+    public <T extends BridgePacket> BridgePacketHandler addPacketHandler(Class<T> packetClass, BridgeSinglePacketHandler<T> handler) {
+        return this.addPacketHandler(new TypedBridgePacketHandler<>(packetClass, handler));
     }
 
     @Override

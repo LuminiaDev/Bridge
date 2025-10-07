@@ -4,6 +4,7 @@ import com.luminiadev.bridge.exception.BridgeCodecException;
 import com.luminiadev.bridge.network.codec.BridgeCodec;
 import com.luminiadev.bridge.network.codec.packet.BridgePacket;
 import com.luminiadev.bridge.network.codec.packet.handler.BridgePacketHandler;
+import com.luminiadev.bridge.network.codec.packet.handler.BridgeSinglePacketHandler;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +51,14 @@ public interface BridgeNetwork {
      *
      * @param handler The BridgePacketHandler
      */
-    void addPacketHandler(BridgePacketHandler handler);
+    BridgePacketHandler addPacketHandler(BridgePacketHandler handler);
+
+    /**
+     * Add a packet handler.
+     *
+     * @param handler The BridgePacketHandler
+     */
+    <T extends BridgePacket> BridgePacketHandler addPacketHandler(Class<T> packetClass, BridgeSinglePacketHandler<T> handler);
 
     /**
      * Remove a packet handler.
