@@ -49,14 +49,17 @@ public interface BridgeNetwork {
     /**
      * Add a packet handler.
      *
-     * @param handler The BridgePacketHandler
+     * @param handler the BridgePacketHandler
+     * @return the added packet handler
      */
     BridgePacketHandler addPacketHandler(BridgePacketHandler handler);
 
     /**
-     * Add a packet handler.
+     * Add a typed packet handler.
      *
-     * @param handler The BridgePacketHandler
+     * @param packetClass the class of packet
+     * @param handler     the BridgeSinglePacketHandler
+     * @return the added TypedBridgePacketHandler
      */
     <T extends BridgePacket> BridgePacketHandler addPacketHandler(Class<T> packetClass, BridgeSinglePacketHandler<T> handler);
 
