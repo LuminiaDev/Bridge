@@ -12,7 +12,7 @@ java {
 
 allprojects {
     group = "com.luminiadev.bridge"
-    version = "1.0.6-SNAPSHOT"
+    version = "1.1.0-SNAPSHOT"
 }
 
 subprojects {
